@@ -8,7 +8,7 @@
 ## Installation
 
 ```bash
-npm i sileo
+npm i sileo-v2
 ```
 
 ## Getting Started
@@ -17,7 +17,7 @@ Render one `Toaster` near the root of your app, then call `sileo` from anywhere
 in your client-side code.
 
 ```tsx
-import { sileo, Toaster } from "sileo";
+import { sileo, Toaster } from "sileo-v2";
 
 export default function App() {
   return (

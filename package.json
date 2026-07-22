@@ -1,11 +1,11 @@
 {
-	"name": "sileo",
+	"name": "sileo-v2",
 	"version": "0.1.0",
 	"description": "An opinionated, physics based toast notification library for react.",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/hiaaryan/sileo.git"
+		"url": "git+https://github.com/GanpatJangra/sileo-v2.git"
 	},
 	"exports": {
 		".": {
@@ -28,7 +28,8 @@
 	],
 	"scripts": {
 		"build": "rm -rf dist && bunchee && cp src/styles.css dist/styles.css",
-		"dev": "bunchee --watch"
+		"dev": "bunchee --watch",
+		"prepublishOnly": "bun run build"
 	},
 	"peerDependencies": {
 		"react": ">=18",
