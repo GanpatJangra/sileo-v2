@@ -1,14 +1,34 @@
 <div align="center">
-  <h1>Sileo</h1>
-  <p>An opinionated, physics-based toast component for React.</p>
-  <p><a href="https://sileo.aaryan.design">Try Out</a> &nbsp; / &nbsp; <a href="https://sileo.aaryan.design/docs">Docs</a></p>
+  <h1>Sileo v2</h1>
+  <p>Animated, physics-based toast notifications for React and TypeScript.</p>
+  <p>
+    <a href="https://www.npmjs.com/package/sileo-v2"><img src="https://img.shields.io/npm/v/sileo-v2" alt="npm version"></a>
+    <a href="https://www.npmjs.com/package/sileo-v2"><img src="https://img.shields.io/npm/dm/sileo-v2" alt="npm downloads"></a>
+    <a href="https://github.com/GanpatJangra/sileo-v2/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/sileo-v2" alt="license"></a>
+  </p>
+  <p><a href="https://sileo.aaryan.design">Live demo</a> &nbsp; / &nbsp; <a href="https://sileo.aaryan.design/docs">Documentation</a> &nbsp; / &nbsp; <a href="https://www.npmjs.com/package/sileo-v2">npm</a></p>
   <video src="https://github.com/user-attachments/assets/a292d310-9189-490a-9f9d-d0a1d09defce"></video>
 </div>
+
+Sileo v2 is a lightweight React toast notification library for success, error,
+warning, information, loading, action, and promise-based states. It ships with
+TypeScript declarations, smooth physics-inspired animations, six viewport
+positions, and customizable content and styling.
+
+## Features
+
+- Physics-inspired animated toast transitions
+- Promise-aware loading, success, error, and action states
+- Six responsive toast positions
+- Custom icons, descriptions, buttons, colors, and class names
+- Automatic expand/collapse behavior and swipe-to-dismiss interaction
+- TypeScript declarations and React 18+ support
+- ESM and CommonJS package exports
 
 ## Installation
 
 ```bash
-npm i sileo-v2
+npm install sileo-v2
 ```
 
 ## Getting Started

@@ -1,8 +1,24 @@
 {
 	"name": "sileo-v2",
 	"version": "0.1.0",
-	"description": "An opinionated, physics based toast notification library for react.",
+	"description": "Animated, physics-based toast notifications for React with TypeScript support, promise states, actions, and customizable styling.",
+	"keywords": [
+		"react",
+		"toast",
+		"notification",
+		"toaster",
+		"snackbar",
+		"typescript",
+		"ui",
+		"component",
+		"animation",
+		"promise"
+	],
 	"license": "MIT",
+	"homepage": "https://github.com/GanpatJangra/sileo-v2#readme",
+	"bugs": {
+		"url": "https://github.com/GanpatJangra/sileo-v2/issues"
+	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/GanpatJangra/sileo-v2.git"
@@ -23,6 +39,12 @@
 	},
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
+	"sideEffects": [
+		"**/*.css"
+	],
+	"publishConfig": {
+		"access": "public"
+	},
 	"files": [
 		"dist"
 	],
@@ -36,6 +58,13 @@
 		"react-dom": ">=18"
 	},
 	"devDependencies": {
-		"bunchee": "^6.9.4"
+		"@types/react": "^19.2.17",
+		"@types/react-dom": "^19.2.3",
+		"bunchee": "^6.12.0",
+		"react": "^19.2.4",
+		"react-dom": "^19.2.4"
+	},
+	"overrides": {
+		"picomatch": "^4.0.4"
 	}
 }
