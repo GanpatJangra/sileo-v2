@@ -1,6 +1,6 @@
 {
 	"name": "sileo-v2",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"description": "Animated, physics-based toast notifications for React with TypeScript support, promise states, actions, and customizable styling.",
 	"keywords": [
 		"react",
