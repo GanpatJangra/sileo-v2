@@ -6,7 +6,7 @@
     <a href="https://www.npmjs.com/package/sileo-v2"><img src="https://img.shields.io/npm/dm/sileo-v2" alt="npm downloads"></a>
     <a href="https://github.com/GanpatJangra/sileo-v2/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/sileo-v2" alt="license"></a>
   </p>
-  <p><a href="https://sileo.aaryan.design">Live demo</a> &nbsp; / &nbsp; <a href="https://sileo.aaryan.design/docs">Documentation</a> &nbsp; / &nbsp; <a href="https://www.npmjs.com/package/sileo-v2">npm</a></p>
+  <p><a href="https://sileo-v2-demo.vercel.app/"><strong>Live demo and playground</strong></a> &nbsp; / &nbsp; <a href="https://sileo-v2-demo.vercel.app/#usage">How to use</a> &nbsp; / &nbsp; <a href="https://www.npmjs.com/package/sileo-v2">npm</a></p>
   <video src="https://github.com/user-attachments/assets/a292d310-9189-490a-9f9d-d0a1d09defce"></video>
 </div>
 
@@ -38,6 +38,7 @@ in your client-side code.
 
 ```tsx
 import { sileo, Toaster } from "sileo-v2";
+import "sileo-v2/styles.css";
 
 export default function App() {
   return (
@@ -50,19 +51,20 @@ export default function App() {
 ```
 
 ```tsx
-sileo.success({ title: "Saved" });
+sileo.success("Saved");
 ```
 
-For detailed docs, visit https://sileo.aaryan.design.
+Try every state and copy complete examples in the
+[interactive playground](https://sileo-v2-demo.vercel.app/).
 
 ## Basic Toasts
 
 ```tsx
-sileo.show({ title: "Default toast" });
-sileo.success({ title: "Saved" });
-sileo.error({ title: "Something went wrong" });
-sileo.warning({ title: "Check this first" });
-sileo.info({ title: "Heads up" });
+sileo.show("Default toast");
+sileo.success("Saved");
+sileo.error("Something went wrong");
+sileo.warning("Check this first");
+sileo.info("Heads up");
 ```
 
 ## Loading Toasts

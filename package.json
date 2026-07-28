@@ -1,6 +1,6 @@
 {
 	"name": "sileo-v2",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "Animated, physics-based toast notifications for React with TypeScript support, promise states, actions, and customizable styling.",
 	"keywords": [
 		"react",
@@ -15,7 +15,7 @@
 		"promise"
 	],
 	"license": "MIT",
-	"homepage": "https://github.com/GanpatJangra/sileo-v2#readme",
+	"homepage": "https://sileo-v2-demo.vercel.app/",
 	"bugs": {
 		"url": "https://github.com/GanpatJangra/sileo-v2/issues"
 	},
