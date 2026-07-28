@@ -53,7 +53,7 @@
 	],
 	"scripts": {
 		"build": "rm -rf dist && bunchee && cp src/styles.css dist/styles.css",
-		"build:demo": "bun run build && bun run --cwd demo build",
+		"build:demo": "bun run --cwd demo build",
 		"dev": "bunchee --watch",
 		"prepublishOnly": "bun run build",
 		"test": "bun run build && node tests/stale-dismiss.mjs"
