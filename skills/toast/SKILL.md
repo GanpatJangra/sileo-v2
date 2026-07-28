@@ -15,6 +15,21 @@ React application that uses `sileo-v2`.
 3. Render one `<Toaster />` near the application root.
 4. Import `sileo` directly where product feedback is triggered.
 
+Configure stream-wide behavior on that single root toaster:
+
+```tsx
+<Toaster
+  position="top-right"
+  limit={3}
+  enqueue={true}
+  avoidDuplicates={true}
+/>
+```
+
+Defaults are `limit={Infinity}`, `enqueue={false}`, and
+`avoidDuplicates={false}`. Use `skipQueue: true` on an urgent toast that should
+display immediately instead of waiting behind queued notifications.
+
 ## Preferred usage
 
 Use compact notifications for short outcomes:

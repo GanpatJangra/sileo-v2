@@ -2,6 +2,14 @@
 
 All notable changes to Sileo v2 are documented here.
 
+## Unreleased
+
+### Added
+
+- Global `limit`, `enqueue`, and `avoidDuplicates` controls on `<Toaster />`.
+- Per-toast `skipQueue` support for urgent notifications.
+- Queue-aware promise updates that preserve the latest state until promotion.
+
 ## [0.1.1] - 2026-07-28
 
 ### Added

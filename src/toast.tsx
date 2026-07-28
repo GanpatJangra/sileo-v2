@@ -36,6 +36,7 @@ interface SileoItem extends InternalSileoOptions {
 	id: string;
 	instanceId: string;
 	exiting?: boolean;
+	queued?: boolean;
 	autoExpandDelayMs?: number;
 	autoCollapseDelayMs?: number;
 }
@@ -50,6 +51,12 @@ export interface SileoToasterProps {
 	position?: SileoPosition;
 	offset?: SileoOffsetValue | SileoOffsetConfig;
 	options?: Partial<SileoOptions>;
+	/** Maximum visible toasts. Defaults to unlimited. */
+	limit?: number;
+	/** Queue new toasts after the limit is reached. Defaults to false. */
+	enqueue?: boolean;
+	/** Ignore a new toast when the same content is already active. */
+	avoidDuplicates?: boolean;
 }
 
 /* ------------------------------ Global State ------------------------------ */
@@ -61,6 +68,9 @@ const store = {
 	listeners: new Set<SileoListener>(),
 	position: "top-right" as SileoPosition,
 	options: undefined as Partial<SileoOptions> | undefined,
+	limit: Number.POSITIVE_INFINITY,
+	enqueue: false,
+	avoidDuplicates: false,
 
 	emit() {
 		for (const fn of this.listeners) fn(this.toasts);
@@ -78,12 +88,78 @@ const generateId = () =>
 
 const timeoutKey = (t: SileoItem) => `${t.id}:${t.instanceId}`;
 
+const normalizeLimit = (limit?: number) =>
+	limit === undefined || !Number.isFinite(limit)
+		? Number.POSITIVE_INFINITY
+		: Math.max(1, Math.floor(limit));
+
+const promoteQueued = (items: SileoItem[]) => {
+	let available =
+		store.limit -
+		items.filter((item) => !item.queued && !item.exiting).length;
+	if (available <= 0) return items;
+
+	let changed = false;
+	const next = items.map((item) => {
+		if (!item.queued || available <= 0) return item;
+		available -= 1;
+		changed = true;
+		return { ...item, queued: false };
+	});
+	return changed ? next : items;
+};
+
+const applyQueueSettings = (items: SileoItem[]) => {
+	if (!store.enqueue) {
+		const active = items.filter((item) => !item.exiting);
+		const removeCount = Math.max(0, active.length - store.limit);
+		const removeIds = new Set(active.slice(0, removeCount).map(timeoutKey));
+		let changed = removeIds.size > 0;
+		const next = items
+			.filter((item) => !removeIds.has(timeoutKey(item)))
+			.map((item) => {
+				if (!item.queued) return item;
+				changed = true;
+				return { ...item, queued: false };
+			});
+		return changed ? next : items;
+	}
+
+	let visible = 0;
+	let changed = false;
+	const limited = items.map((item) => {
+		if (item.exiting) return item;
+		visible += 1;
+		const queued = visible > store.limit;
+		if (item.queued === queued) return item;
+		changed = true;
+		return { ...item, queued };
+	});
+
+	return changed ? promoteQueued(limited) : promoteQueued(items);
+};
+
+const sameToastContent = (a: SileoItem, b: InternalSileoOptions) =>
+	a.state === b.state &&
+	a.title === b.title &&
+	a.description === b.description &&
+	a.position === (b.position ?? store.position);
+
 /* ------------------------------- Toast API -------------------------------- */
 
 const dismissToast = (id: string) => {
 	const item = store.toasts.find((t) => t.id === id);
 	if (!item || item.exiting) return;
 	const instanceId = item.instanceId;
+
+	if (item.queued) {
+		store.update((prev) =>
+			promoteQueued(
+				prev.filter((t) => t.id !== id || t.instanceId !== instanceId),
+			),
+		);
+		return;
+	}
 
 	store.update((prev) =>
 		prev.map((t) =>
@@ -96,7 +172,9 @@ const dismissToast = (id: string) => {
 	setTimeout(
 		() =>
 			store.update((prev) =>
-				prev.filter((t) => t.id !== id || t.instanceId !== instanceId),
+				promoteQueued(
+					prev.filter((t) => t.id !== id || t.instanceId !== instanceId),
+				),
 			),
 		EXIT_DURATION,
 	);
@@ -150,11 +228,33 @@ const createToast = (options: SileoInput) => {
 
 	const id = merged.id ?? generateId();
 	const prev = live.find((t) => t.id === id);
-	const item = buildSileoItem(merged, id, prev?.position);
+	const duplicate = store.avoidDuplicates
+		? live.find((toast) => sameToastContent(toast, merged))
+		: undefined;
+
+	if (!prev && duplicate) {
+		return {
+			id: duplicate.id,
+			duration:
+				duplicate.duration === undefined ? DEFAULT_DURATION : duplicate.duration,
+		};
+	}
+
+	const visible = live.filter((toast) => !toast.queued);
+	const limitReached = visible.length >= store.limit;
+	const shouldQueue = !prev && limitReached && store.enqueue && !merged.skipQueue;
+	const item = {
+		...buildSileoItem(merged, id, prev?.position),
+		queued: prev?.queued ?? shouldQueue,
+	};
 
 	if (prev) {
 		store.update((p) => p.map((t) => (t.id === id ? item : t)));
 	} else {
+		if (limitReached && (!store.enqueue || merged.skipQueue)) {
+			const oldest = visible[0];
+			if (oldest) dismissToast(oldest.id);
+		}
 		store.update((p) => [...p.filter((t) => t.id !== id), item]);
 	}
 	return {
@@ -172,7 +272,21 @@ const updateToast = (id: string, options: SileoInput) => {
 		id,
 		existing.position,
 	);
-	store.update((prev) => prev.map((t) => (t.id === id ? item : t)));
+	const skipQueue = normalizeOptions(options).skipQueue;
+	const queued = existing.queued && !skipQueue;
+
+	if (existing.queued && skipQueue) {
+		const visible = store.toasts.filter(
+			(toast) => !toast.queued && !toast.exiting,
+		);
+		if (visible.length >= store.limit && visible[0]) {
+			dismissToast(visible[0].id);
+		}
+	}
+
+	store.update((prev) =>
+		prev.map((t) => (t.id === id ? { ...item, queued } : t)),
+	);
 };
 
 type SileoPromiseMessage<T = unknown> =
@@ -260,7 +374,9 @@ export const sileo = {
 
 	clear: (position?: SileoPosition) =>
 		store.update((prev) =>
-			position ? prev.filter((t) => t.position !== position) : [],
+			position
+				? promoteQueued(prev.filter((t) => t.position !== position))
+				: [],
 		),
 };
 
@@ -271,6 +387,9 @@ export function Toaster({
 	position = "top-right",
 	offset,
 	options,
+	limit,
+	enqueue = false,
+	avoidDuplicates = false,
 }: SileoToasterProps) {
 	const [toasts, setToasts] = useState<SileoItem[]>(store.toasts);
 	const [activeId, setActiveId] = useState<string>();
@@ -293,7 +412,11 @@ export function Toaster({
 	useEffect(() => {
 		store.position = position;
 		store.options = options;
-	}, [position, options]);
+		store.limit = normalizeLimit(limit);
+		store.enqueue = enqueue;
+		store.avoidDuplicates = avoidDuplicates;
+		store.update(applyQueueSettings);
+	}, [position, options, limit, enqueue, avoidDuplicates]);
 
 	const clearAllTimers = useCallback(() => {
 		for (const t of timersRef.current.values()) clearTimeout(t);
@@ -304,7 +427,7 @@ export function Toaster({
 		if (hoverRef.current) return;
 
 		for (const item of items) {
-			if (item.exiting) continue;
+			if (item.exiting || item.queued) continue;
 			const key = timeoutKey(item);
 			if (timersRef.current.has(key)) continue;
 
@@ -370,7 +493,7 @@ export function Toaster({
 
 	const latest = useMemo(() => {
 		for (let i = toasts.length - 1; i >= 0; i--) {
-			if (!toasts[i].exiting) return toasts[i].id;
+			if (!toasts[i].exiting && !toasts[i].queued) return toasts[i].id;
 		}
 		return undefined;
 	}, [toasts]);
@@ -428,6 +551,7 @@ export function Toaster({
 	const byPosition = useMemo(() => {
 		const map = {} as Partial<Record<SileoPosition, SileoItem[]>>;
 		for (const t of toasts) {
+			if (t.queued) continue;
 			const pos = t.position ?? position;
 			const arr = map[pos];
 			if (arr) {

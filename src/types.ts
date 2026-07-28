@@ -48,4 +48,9 @@ export interface SileoOptions {
 	roundness?: number;
 	autopilot?: boolean | { expand?: number; collapse?: number };
 	button?: SileoButton;
+	/**
+	 * Bypass an enabled queue for this toast. When the visible limit is full,
+	 * the oldest visible toast is dismissed to make room.
+	 */
+	skipQueue?: boolean;
 }

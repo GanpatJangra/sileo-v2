@@ -67,6 +67,53 @@ sileo.warning("Check this first");
 sileo.info("Heads up");
 ```
 
+## Limit, Queue, and Duplicates
+
+Configure stream behavior once on the root `Toaster`. These options are
+framework-independent React props.
+
+```tsx
+<Toaster
+  position="top-right"
+  limit={3}
+  enqueue={true}
+  avoidDuplicates={true}
+/>
+```
+
+The defaults preserve Sileo's existing behavior:
+
+```tsx
+<Toaster
+  position="top-right"
+  limit={Infinity}
+  enqueue={false}
+  avoidDuplicates={false}
+/>
+```
+
+- `limit` controls the maximum number of active notifications.
+- With `enqueue={false}`, a new toast dismisses the oldest visible toast after
+  the limit is reached.
+- With `enqueue={true}`, new toasts wait and are displayed in order as visible
+  slots become available.
+- `avoidDuplicates={true}` reuses an active toast when its state, title,
+  description, and position match.
+- Promise notifications remain queued while their state updates and render
+  their latest state when promoted.
+
+Use `skipQueue` when one notification must appear immediately:
+
+```tsx
+sileo.info({
+  title: "This notification is displayed immediately",
+  skipQueue: true,
+});
+```
+
+When the visible limit is full, `skipQueue` dismisses the oldest visible toast
+to make room.
+
 ## Loading Toasts
 
 Use `sileo.loading` when an async action starts. It returns a toast id, so you can
@@ -156,6 +203,7 @@ type SileoOptions = {
     title: string;
     onClick: () => void;
   };
+  skipQueue?: boolean;
 };
 ```
 

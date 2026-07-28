@@ -3,7 +3,7 @@
 import "./styles.css";
 
 export { sileo, Toaster } from "./toast";
-export type { SileoPromiseOptions } from "./toast";
+export type { SileoPromiseOptions, SileoToasterProps } from "./toast";
 export type {
 	SileoButton,
 	SileoOptions,

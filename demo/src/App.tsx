@@ -91,7 +91,12 @@ export default function App() {
   return (
     <>
       <YourApp />
-      <Toaster position="top-right" />
+      <Toaster
+        position="top-right"
+        limit={3}
+        enqueue={true}
+        avoidDuplicates={true}
+      />
     </>
   );
 }`,
