@@ -15,6 +15,14 @@ globalThis.setTimeout = (callback, delay) => {
 
 try {
 	sileo.clear();
+	sileo.success("Profile saved");
+	const stringToast = renderToStaticMarkup(React.createElement(Toaster));
+
+	if (!stringToast.includes("Profile saved")) {
+		throw new Error("String shorthand did not render as the toast title.");
+	}
+
+	sileo.clear();
 	sileo.show({ id: "shared", title: "First toast", duration: null });
 	sileo.dismiss("shared");
 	sileo.show({ id: "shared", title: "Replacement toast", duration: null });

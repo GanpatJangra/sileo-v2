@@ -40,6 +40,50 @@ const fills: Record<SileoState, string> = {
 
 const snippets = {
 	install: "npm install sileo-v2",
+	quick: `import { sileo } from "sileo-v2";
+
+// Success
+sileo.success("Profile saved");
+
+// Error
+sileo.error("Could not save profile");
+
+// Warning
+sileo.warning("Storage is almost full");
+
+// Info
+sileo.info("A new version is ready");
+
+// Action
+sileo.action({
+  title: "Invite sent to Naveen",
+  button: {
+    title: "Undo",
+    onClick: () => sileo.success("Invite restored"),
+  },
+});
+
+// Loading → success
+const toastId = sileo.loading("Syncing workspace");
+sileo.update(toastId, {
+  title: "Workspace synced",
+  state: "success",
+});
+
+// Promise toast
+sileo.promise(publishPackage(), {
+  loading: "Publishing package…",
+  success: "Package published",
+  error: "Publish failed",
+});
+
+// Custom toast
+sileo.show({
+  title: "A toast with personality",
+  description: "Custom color, shape, timing, and content.",
+  fill: "#e8ff67",
+  roundness: 22,
+});`,
 	setup: `import { Toaster } from "sileo-v2";
 import "sileo-v2/styles.css";
 
@@ -51,47 +95,16 @@ export default function App() {
     </>
   );
 }`,
-	wrapper: `import { sileo } from "sileo-v2";
+	usage: `import { sileo } from "sileo-v2";
 
-const toastOptions = (message, options = {}) => ({
-  title: message,
-  ...options,
-});
+sileo.success("Profile saved");
+sileo.error("Could not save profile");
 
-const expandedToastOptions = (message, description, options = {}) => ({
-  title: message,
-  description,
-  ...options,
-});
-
-export const toast = {
-  success: (message, options = {}) =>
-    sileo.success(toastOptions(message, options)),
-  error: (message, options = {}) =>
-    sileo.error(toastOptions(message, options)),
-  warn: (message, options = {}) =>
-    sileo.warning(toastOptions(message, options)),
-  info: (message, options = {}) =>
-    sileo.info(toastOptions(message, options)),
-  sExpend: (message, description, options = {}) =>
-    sileo.success(expandedToastOptions(message, description, options)),
-  eExpend: (message, description, options = {}) =>
-    sileo.error(expandedToastOptions(message, description, options)),
-  wExpend: (message, description, options = {}) =>
-    sileo.warning(expandedToastOptions(message, description, options)),
-  iExpend: (message, description, options = {}) =>
-    sileo.info(expandedToastOptions(message, description, options)),
-};`,
-	usage: `import { toast } from "@/lib/toastWrapper";
-
-toast.success("Profile saved");
-toast.error("Could not save profile");
-
-toast.sExpend(
-  "Upload complete",
-  "Your file is ready to share.",
-  { position: "bottom-right" },
-);`,
+sileo.info({
+  title: "Upload complete",
+  description: "Your file is ready to share.",
+  position: "bottom-right",
+});`,
 };
 
 function App() {
@@ -106,6 +119,7 @@ function App() {
 	const [duration, setDuration] = useState(6000);
 	const [autopilot, setAutopilot] = useState(true);
 	const [copiedSnippet, setCopiedSnippet] = useState<string | null>(null);
+	const [showPlaygroundCode, setShowPlaygroundCode] = useState(false);
 	const [activeToastId, setActiveToastId] = useState<string | null>(null);
 
 	useEffect(() => {
@@ -502,26 +516,39 @@ function App() {
 								<span className="toggle-ui" />
 							</label>
 
-							<div className="code-preview">
-								<div className="code-top">
-									<span>
-										<i />
-										<i />
-										<i />
-									</span>
-									<small>example.tsx</small>
-								</div>
-								<pre>
-									<code>
-										<span className="code-purple">sileo</span>.
-										<span className="code-blue">success</span>({`{\n`}
-										{"  "}title:{" "}
-										<span className="code-green">"Changes saved"</span>,{`\n`}
-										{"  "}position:{" "}
-										<span className="code-green">"{position}"</span>
-										{`\n}`});
-									</code>
-								</pre>
+							<div className="playground-code">
+								<button
+									className="code-toggle"
+									type="button"
+									aria-expanded={showPlaygroundCode}
+									aria-controls="playground-code-snippet"
+									onClick={() => setShowPlaygroundCode((current) => !current)}
+								>
+									<span>{showPlaygroundCode ? "Hide code" : "Show code"}</span>
+									<i aria-hidden="true">{showPlaygroundCode ? "−" : "+"}</i>
+								</button>
+
+								{showPlaygroundCode && (
+									<div className="code-preview" id="playground-code-snippet">
+										<div className="code-top">
+											<span>
+												<i />
+												<i />
+												<i />
+											</span>
+											<small>example.tsx</small>
+											<button
+												type="button"
+												onClick={() => copySnippet("quick", snippets.quick)}
+											>
+												{copiedSnippet === "quick" ? "Copied ✓" : "Copy"}
+											</button>
+										</div>
+										<pre>
+											<code>{snippets.quick}</code>
+										</pre>
+									</div>
+								)}
 							</div>
 						</aside>
 					</div>
@@ -619,8 +646,8 @@ function App() {
 							<h2>Ship a consistent toast API.</h2>
 						</div>
 						<p>
-							Install once, mount one toaster, then route product
-							notifications through a tiny shared wrapper.
+							Install once, mount one toaster, then import Sileo directly
+							wherever product feedback is needed.
 						</p>
 					</div>
 
@@ -644,29 +671,11 @@ function App() {
 								</pre>
 							</article>
 
-							<article className="snippet-card snippet-card-large">
-								<div className="snippet-head">
-									<span>
-										<small>Step 02 · lib/toastWrapper.js</small>
-										<strong>Add the shared wrapper</strong>
-									</span>
-									<button
-										type="button"
-										onClick={() => copySnippet("wrapper", snippets.wrapper)}
-									>
-										{copiedSnippet === "wrapper" ? "Copied ✓" : "Copy code"}
-									</button>
-								</div>
-								<pre>
-									<code>{snippets.wrapper}</code>
-								</pre>
-							</article>
-
 							<article className="snippet-card">
 								<div className="snippet-head">
 									<span>
-										<small>Step 03</small>
-										<strong>Use it anywhere</strong>
+										<small>Step 02</small>
+										<strong>Import and use Sileo directly</strong>
 									</span>
 									<button
 										type="button"
@@ -683,34 +692,34 @@ function App() {
 
 						<aside className="practice-card">
 							<span className="api-index">Recommended pattern</span>
-							<h3>Why use the wrapper?</h3>
+							<h3>Why use Sileo directly?</h3>
 							<ul className="benefit-list">
 								<li>
 									<span>01</span>
 									<div>
-										<strong>One product language</strong>
-										<p>Centralize naming and defaults across every feature.</p>
+										<strong>Small, focused API</strong>
+										<p>Import one object and trigger any notification state.</p>
 									</div>
 								</li>
 								<li>
 									<span>02</span>
 									<div>
-										<strong>Less repeated code</strong>
-										<p>Call message-first helpers without repeating title objects.</p>
+										<strong>String-first shortcuts</strong>
+										<p>Pass a message directly for common success and error feedback.</p>
 									</div>
 								</li>
 								<li>
 									<span>03</span>
 									<div>
-										<strong>Native options stay open</strong>
+										<strong>Full options when needed</strong>
 										<p>Pass position, duration, actions, and styling when needed.</p>
 									</div>
 								</li>
 								<li>
 									<span>04</span>
 									<div>
-										<strong>Easier to maintain</strong>
-										<p>Change defaults or libraries later from one adapter file.</p>
+										<strong>No wrapper to maintain</strong>
+										<p>Use the documented package API without an application adapter.</p>
 									</div>
 								</li>
 							</ul>

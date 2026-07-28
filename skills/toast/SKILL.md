@@ -1,6 +1,6 @@
 ---
 name: sileo-toast
-description: Add consistent Sileo v2 toast notifications to React applications using the shared toast wrapper.
+description: Add consistent Sileo v2 toast notifications directly to React applications.
 ---
 
 # Sileo Toast
@@ -13,49 +13,48 @@ React application that uses `sileo-v2`.
 1. Install `sileo-v2`.
 2. Import `sileo-v2/styles.css` once in the application entry point.
 3. Render one `<Toaster />` near the application root.
-4. Copy `lib/toastWrapper.js` into the consuming application.
-5. Import `toast` from that wrapper instead of importing `sileo` throughout
-   feature code.
+4. Import `sileo` directly where product feedback is triggered.
 
 ## Preferred usage
 
 Use compact notifications for short outcomes:
 
 ```js
-toast.success("Profile saved");
-toast.error("Could not save profile");
-toast.warn("Storage is almost full");
-toast.info("A new version is ready");
+import { sileo } from "sileo-v2";
+
+sileo.success("Profile saved");
+sileo.error("Could not save profile");
+sileo.warning("Storage is almost full");
+sileo.info("A new version is ready");
 ```
 
 Use an expanded notification only when the description adds useful context:
 
 ```js
-toast.sExpend(
-  "Profile saved",
-  "Your public details are now visible to your team.",
-);
+sileo.success({
+  title: "Profile saved",
+  description: "Your public details are now visible to your team.",
+});
 ```
 
 Pass native Sileo options through the final argument:
 
 ```js
-toast.success("Draft saved", {
+sileo.success({
+  title: "Draft saved",
   position: "bottom-right",
   duration: 4000,
 });
 ```
 
-## Benefits of the wrapper
+## Benefits of direct usage
 
-- Gives feature code a simple, message-first API.
-- Centralizes naming and notification conventions.
-- Keeps repeated `{ title: message }` mapping out of components.
-- Preserves all native Sileo options through the optional final argument.
-- Makes a future library migration or application-wide default change local to
-  one file.
-- Separates brief notifications from expanded notifications with descriptions.
-- Makes toast calls straightforward to mock in unit tests.
+- Keeps the integration small with no application wrapper to maintain.
+- Provides message-first shortcuts for common notifications.
+- Preserves the complete Sileo options API for richer notifications.
+- Makes package documentation map directly to application code.
+- Supports loading, promise, update, dismiss, action, and clear flows from one
+  imported object.
 
 ## Best approach
 
@@ -67,13 +66,12 @@ toast.success("Draft saved", {
 - Do not show a toast for information already obvious in the current UI.
 - Use `sileo.promise` directly for asynchronous lifecycle notifications, and
   `sileo.update` when one toast must change state without creating duplicates.
-- Keep wrapper defaults conservative; pass page-specific timing, position, and
+- Keep global defaults conservative; pass page-specific timing, position, and
   actions at the call site.
 - Preserve accessibility by using meaningful text and avoiding color-only
   distinctions.
 
 ## Project references
 
-- Wrapper: `lib/toastWrapper.js`
 - Package styles: `sileo-v2/styles.css`
 - Package API: `sileo`

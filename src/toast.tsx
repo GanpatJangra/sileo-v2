@@ -30,6 +30,7 @@ const expandDir = (pos: SileoPosition) =>
 /* ---------------------------------- Types --------------------------------- */
 
 type InternalSileoOptions = SileoOptions;
+type SileoInput = SileoOptions | string;
 
 interface SileoItem extends InternalSileoOptions {
 	id: string;
@@ -140,9 +141,12 @@ const buildSileoItem = (
 	};
 };
 
-const createToast = (options: InternalSileoOptions) => {
+const normalizeOptions = (options: SileoInput): SileoOptions =>
+	typeof options === "string" ? { title: options } : options;
+
+const createToast = (options: SileoInput) => {
 	const live = store.toasts.filter((t) => !t.exiting);
-	const merged = mergeOptions(options);
+	const merged = mergeOptions(normalizeOptions(options));
 
 	const id = merged.id ?? generateId();
 	const prev = live.find((t) => t.id === id);
@@ -159,11 +163,15 @@ const createToast = (options: InternalSileoOptions) => {
 	};
 };
 
-const updateToast = (id: string, options: InternalSileoOptions) => {
+const updateToast = (id: string, options: SileoInput) => {
 	const existing = store.toasts.find((t) => t.id === id);
 	if (!existing) return;
 
-	const item = buildSileoItem(mergeOptions(options), id, existing.position);
+	const item = buildSileoItem(
+		mergeOptions(normalizeOptions(options)),
+		id,
+		existing.position,
+	);
 	store.update((prev) => prev.map((t) => (t.id === id ? item : t)));
 };
 
@@ -192,22 +200,32 @@ const resolvePromiseOptions = <T,>(
 	toToastOptions(typeof value === "function" ? value(payload) : value);
 
 export const sileo = {
-	show: (opts: SileoOptions) => createToast(opts).id,
-	success: (opts: SileoOptions) =>
-		createToast({ ...opts, state: "success" }).id,
-	loading: (opts: SileoOptions) =>
-		createToast({
-			...opts,
+	show: (opts: SileoInput) => createToast(opts).id,
+	success: (opts: SileoInput) =>
+		createToast({ ...normalizeOptions(opts), state: "success" }).id,
+	loading: (opts: SileoInput) => {
+		const options = normalizeOptions(opts);
+		return createToast({
+			...options,
 			state: "loading",
-			duration: opts.duration === undefined ? null : opts.duration,
+			duration: options.duration === undefined ? null : options.duration,
+		}).id;
+	},
+	error: (opts: SileoInput) =>
+		createToast({ ...normalizeOptions(opts), state: "error" }).id,
+	warning: (opts: SileoInput) =>
+		createToast({
+			...normalizeOptions(opts),
+			state: "warning",
 		}).id,
-	error: (opts: SileoOptions) => createToast({ ...opts, state: "error" }).id,
-	warning: (opts: SileoOptions) =>
-		createToast({ ...opts, state: "warning" }).id,
-	info: (opts: SileoOptions) => createToast({ ...opts, state: "info" }).id,
-	action: (opts: SileoOptions) => createToast({ ...opts, state: "action" }).id,
-	update: (id: string, opts: SileoOptions) =>
-		updateToast(id, { ...opts, id: opts.id ?? id }),
+	info: (opts: SileoInput) =>
+		createToast({ ...normalizeOptions(opts), state: "info" }).id,
+	action: (opts: SileoInput) =>
+		createToast({ ...normalizeOptions(opts), state: "action" }).id,
+	update: (id: string, opts: SileoInput) => {
+		const options = normalizeOptions(opts);
+		return updateToast(id, { ...options, id: options.id ?? id });
+	},
 
 	promise: <T,>(
 		promise: Promise<T> | (() => Promise<T>),
