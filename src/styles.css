@@ -47,6 +47,7 @@
 	--sileo-state-warning: oklch(0.795 0.184 86.047);
 	--sileo-state-info: oklch(0.685 0.169 237.323);
 	--sileo-state-action: oklch(0.623 0.214 259.815);
+	--sileo-foreground: #202327;
 }
 
 /* ---------------------------------- Toast --------------------------------- */
@@ -333,6 +334,7 @@
 	padding: 1rem;
 	font-size: 0.875rem;
 	line-height: 1.25rem;
+	color: var(--sileo-foreground);
 	contain: layout style;
 	content-visibility: auto;
 }

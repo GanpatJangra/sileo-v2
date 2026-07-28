@@ -23,6 +23,9 @@
 		"type": "git",
 		"url": "git+https://github.com/GanpatJangra/sileo-v2.git"
 	},
+	"workspaces": [
+		"demo"
+	],
 	"exports": {
 		".": {
 			"import": {
@@ -50,8 +53,10 @@
 	],
 	"scripts": {
 		"build": "rm -rf dist && bunchee && cp src/styles.css dist/styles.css",
+		"build:demo": "bun run build && bun run --cwd demo build",
 		"dev": "bunchee --watch",
-		"prepublishOnly": "bun run build"
+		"prepublishOnly": "bun run build",
+		"test": "bun run build && node tests/stale-dismiss.mjs"
 	},
 	"peerDependencies": {
 		"react": ">=18",

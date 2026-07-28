@@ -82,13 +82,21 @@ const timeoutKey = (t: SileoItem) => `${t.id}:${t.instanceId}`;
 const dismissToast = (id: string) => {
 	const item = store.toasts.find((t) => t.id === id);
 	if (!item || item.exiting) return;
+	const instanceId = item.instanceId;
 
 	store.update((prev) =>
-		prev.map((t) => (t.id === id ? { ...t, exiting: true } : t)),
+		prev.map((t) =>
+			t.id === id && t.instanceId === instanceId
+				? { ...t, exiting: true }
+				: t,
+		),
 	);
 
 	setTimeout(
-		() => store.update((prev) => prev.filter((t) => t.id !== id)),
+		() =>
+			store.update((prev) =>
+				prev.filter((t) => t.id !== id || t.instanceId !== instanceId),
+			),
 		EXIT_DURATION,
 	);
 };

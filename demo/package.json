@@ -1,0 +1,23 @@
+{
+	"name": "sileo-v2-demo",
+	"private": true,
+	"version": "0.0.0",
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build",
+		"preview": "vite preview"
+	},
+	"dependencies": {
+		"@vitejs/plugin-react": "^4.4.1",
+		"vite": "^6.1.0",
+		"react": "^19.2.4",
+		"react-dom": "^19.2.4",
+		"sileo-v2": "file:.."
+	},
+	"devDependencies": {
+		"@types/react": "^19.2.17",
+		"@types/react-dom": "^19.2.3",
+		"typescript": "^5.7.3"
+	}
+}
