@@ -128,6 +128,278 @@ function App() {
 		window.localStorage.setItem("sileo-demo-theme", theme);
 	}, [theme]);
 
+	const isChangelogPage =
+		window.location.pathname.replace(/\/+$/, "") === "/changelog";
+
+	if (isChangelogPage) {
+		return (
+			<div className="site-shell changelog-shell">
+				<header className="topbar">
+					<a className="brand" href="/" aria-label="Sileo home">
+						<span className="brand-mark">S</span>
+						<span>Sileo</span>
+						<sup>v2</sup>
+					</a>
+					<nav aria-label="Main navigation">
+						<a href="/#playground">Playground</a>
+						<a href="/#usage">How to use</a>
+						<a href="/changelog" aria-current="page">
+							Changelog
+						</a>
+						<a
+							href="https://www.npmjs.com/package/sileo-v2"
+							target="_blank"
+							rel="noreferrer"
+						>
+							npm ↗
+						</a>
+					</nav>
+					<div className="header-actions">
+						<a className="header-changelog-link" href="/">
+							Home
+						</a>
+						<button
+							className="theme-toggle"
+							type="button"
+							onClick={() =>
+								setTheme((current) =>
+									current === "dark" ? "light" : "dark",
+								)
+							}
+							aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+						>
+							<span className="theme-track" aria-hidden="true">
+								<span>{theme === "dark" ? "☾" : "☀"}</span>
+							</span>
+							<small>{theme === "dark" ? "Dark" : "Light"}</small>
+						</button>
+						<a className="github-link" href="/">
+							Back home
+						</a>
+					</div>
+				</header>
+
+				<main className="changelog-main">
+					<section className="changelog-hero">
+						<p className="section-kicker">Release history</p>
+						<h1>What changed.</h1>
+						<p>
+							New capabilities, refinements, and fixes across every published
+							Sileo v2 release.
+						</p>
+						<div className="release-summary">
+							<span>
+								<strong>2</strong>
+								<small>releases</small>
+							</span>
+							<span>
+								<strong>0.1.1</strong>
+								<small>latest</small>
+							</span>
+							<span className="release-channel">Public releases</span>
+						</div>
+					</section>
+
+					<section className="release-list" aria-label="Published releases">
+						<article className="release-entry release-latest">
+							<div className="release-meta">
+								<span className="release-dot" />
+								<div>
+									<small>July 28, 2026</small>
+									<strong>v0.1.1</strong>
+									<span className="latest-badge">Latest</span>
+								</div>
+							</div>
+							<div className="release-content">
+								<div className="release-group">
+									<h2>Added</h2>
+									<ul>
+										<li>
+											String shorthand for <code>sileo.show</code>, state
+											helpers, and <code>sileo.update</code>.
+										</li>
+										<li>
+											Configurable <code>--sileo-foreground</code> variable
+											for toast description contrast.
+										</li>
+										<li>
+											Interactive demo covering every toast state and
+											lifecycle method.
+										</li>
+										<li>
+											Light and dark themes, copy-ready examples, and a
+											complete usage guide.
+										</li>
+									</ul>
+								</div>
+								<div className="release-group">
+									<h2>Fixed</h2>
+									<ul>
+										<li>
+											Prevented stale dismissal timers from removing newer
+											toasts that reuse the same ID.
+										</li>
+										<li>
+											Fixed low-contrast description text on pale toast
+											backgrounds.
+										</li>
+										<li>
+											Made Vercel builds work from the repository root or
+											demo directory.
+										</li>
+									</ul>
+								</div>
+								<div className="release-group">
+									<h2>Documentation</h2>
+									<ul>
+										<li>
+											Added the live playground and direct string-message
+											examples.
+										</li>
+									</ul>
+								</div>
+							</div>
+						</article>
+
+						<article className="release-entry">
+							<div className="release-meta">
+								<span className="release-dot" />
+								<div>
+									<small>July 22, 2026</small>
+									<strong>v0.1.0</strong>
+								</div>
+							</div>
+							<div className="release-content">
+								<div className="release-group release-title-group">
+									<h2>
+										Fix toast persistence, make SVG filter IDs safe, and clean
+										up pointer capture
+									</h2>
+									<div className="release-stats">
+										<span>6 commits</span>
+										<span>5 files changed</span>
+										<span className="stat-positive">+191</span>
+										<span className="stat-negative">−26</span>
+									</div>
+									<p className="release-owner">
+										Merged by <strong>sahilbhardwaj1</strong> into{" "}
+										<code>main</code> from{" "}
+										<code>codex/find-and-fix-bugs-with-security-review</code>.
+									</p>
+								</div>
+								<div className="release-group">
+									<h2>Motivation</h2>
+									<ul>
+										<li>
+											Persistent toasts using <code>duration: null</code> were
+											falling back to the default timeout.
+										</li>
+										<li>
+											Public toast IDs could create unsafe or colliding SVG
+											filter references.
+										</li>
+										<li>
+											Interrupted gestures could retain pointer capture and
+											leave a toast visually stuck.
+										</li>
+									</ul>
+								</div>
+								<div className="release-group">
+									<h2>Changes</h2>
+									<ul>
+										<li>
+											Preserved <code>null</code> as the explicit persistent
+											duration and defaulted only <code>undefined</code>.
+										</li>
+										<li>
+											Generated safe internal SVG IDs from React{" "}
+											<code>useId()</code> and <code>SVG_ID_SAFE</code>.
+										</li>
+										<li>
+											Released pointer capture and reset swipe state on
+											pointer-up and pointer-cancel.
+										</li>
+										<li>
+											Added loading and update APIs and simplified promise
+											toast messages.
+										</li>
+										<li>
+											Refreshed usage documentation and removed the
+											experimental manual promise controller.
+										</li>
+									</ul>
+								</div>
+								<div className="release-group">
+									<h2>Commits</h2>
+									<ol className="commit-list">
+										<li>
+											<code>8c94815</code> Fix toast persistence and SVG ID
+											safety
+										</li>
+										<li>
+											<code>ab0f3c5</code> Add toast loading and update API
+										</li>
+										<li>
+											<code>55ac29f</code> Simplify promise toast messages
+										</li>
+										<li>
+											<code>a1ca9e2</code> Add manual promise toast controller
+										</li>
+										<li>
+											<code>2adfd0c</code> Refresh README usage docs
+										</li>
+										<li>
+											<code>d9a6f47</code> Remove push alias and manual promise
+											controller
+										</li>
+										<li>
+											<code>4cef924</code> Merge into main
+										</li>
+									</ol>
+								</div>
+								<div className="release-group">
+									<h2>Validation</h2>
+									<ul>
+										<li>
+											<code>git diff --check</code> passed without whitespace
+											issues.
+										</li>
+										<li>
+											<code>bun run build</code> produced distribution
+											artifacts.
+										</li>
+										<li>
+											Type checking was blocked in that environment by
+											missing React and CSS declarations.
+										</li>
+										<li>
+											<code>npm audit --omit=dev</code> was blocked because no
+											package lock existed.
+										</li>
+									</ul>
+								</div>
+							</div>
+						</article>
+					</section>
+				</main>
+
+				<footer>
+					<a className="brand footer-brand" href="/">
+						<span className="brand-mark">S</span>
+						<span>Sileo</span>
+					</a>
+					<p>Every release, clearly documented.</p>
+					<div>
+						<a href="/">Home</a>
+						<a href="/#usage">How to use</a>
+						<a href="https://www.npmjs.com/package/sileo-v2">npm</a>
+						<a href="https://github.com/GanpatJangra/sileo-v2">GitHub</a>
+					</div>
+				</footer>
+			</div>
+		);
+	}
+
 	const showState = (state: SileoState) => {
 		const item = states.find((entry) => entry.state === state)!;
 		const options = {
@@ -317,6 +589,7 @@ function App() {
 					<a href="#playground">Playground</a>
 					<a href="#api">API lab</a>
 					<a href="#usage">How to use</a>
+					<a href="/changelog">Changelog</a>
 					<a href="#features">Features</a>
 					<a
 						href="https://www.npmjs.com/package/sileo-v2"
@@ -327,6 +600,9 @@ function App() {
 					</a>
 				</nav>
 				<div className="header-actions">
+					<a className="header-changelog-link" href="/changelog">
+						Changelog
+					</a>
 					<button
 						className="theme-toggle"
 						type="button"
@@ -776,6 +1052,7 @@ function App() {
 				<p>Make the small moments feel considered.</p>
 				<div>
 					<a href="#usage">How to use</a>
+					<a href="/changelog">Changelog</a>
 					<a
 						href="https://github.com/GanpatJangra/sileo-v2/blob/main/skills/toast/SKILL.md"
 						target="_blank"

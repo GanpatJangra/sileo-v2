@@ -2,5 +2,11 @@
 	"$schema": "https://openapi.vercel.sh/vercel.json",
 	"framework": "vite",
 	"buildCommand": "bun run build:demo",
-	"outputDirectory": "demo/dist"
+	"outputDirectory": "demo/dist",
+	"rewrites": [
+		{
+			"source": "/changelog",
+			"destination": "/"
+		}
+	]
 }

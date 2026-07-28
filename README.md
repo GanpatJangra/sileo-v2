@@ -6,7 +6,7 @@
     <a href="https://www.npmjs.com/package/sileo-v2"><img src="https://img.shields.io/npm/dm/sileo-v2" alt="npm downloads"></a>
     <a href="https://github.com/GanpatJangra/sileo-v2/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/sileo-v2" alt="license"></a>
   </p>
-  <p><a href="https://sileo-v2-demo.vercel.app/"><strong>Live demo and playground</strong></a> &nbsp; / &nbsp; <a href="https://sileo-v2-demo.vercel.app/#usage">How to use</a> &nbsp; / &nbsp; <a href="https://www.npmjs.com/package/sileo-v2">npm</a></p>
+  <p><a href="https://sileo-v2-demo.vercel.app/"><strong>Live demo and playground</strong></a> &nbsp; / &nbsp; <a href="https://sileo-v2-demo.vercel.app/#usage">How to use</a> &nbsp; / &nbsp; <a href="https://sileo-v2-demo.vercel.app/changelog">Changelog</a> &nbsp; / &nbsp; <a href="https://www.npmjs.com/package/sileo-v2">npm</a></p>
   <video src="https://github.com/user-attachments/assets/a292d310-9189-490a-9f9d-d0a1d09defce"></video>
 </div>
 
