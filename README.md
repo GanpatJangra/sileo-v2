@@ -22,8 +22,26 @@ positions, and customizable content and styling.
 - Six responsive toast positions
 - Custom icons, descriptions, buttons, colors, and class names
 - Automatic expand/collapse behavior and swipe-to-dismiss interaction
+- Optional limits, FIFO queueing, duplicate prevention, and urgent queue bypass
+- Persistent notifications and update-in-place lifecycle controls
 - TypeScript declarations and React 18+ support
 - ESM and CommonJS package exports
+
+## Quick API
+
+| API | Purpose |
+| --- | --- |
+| `sileo.show()` | Display a custom/default toast |
+| `sileo.success()` | Display a success toast |
+| `sileo.error()` | Display an error toast |
+| `sileo.warning()` | Display a warning toast |
+| `sileo.info()` | Display an information toast |
+| `sileo.loading()` | Display a persistent loading toast |
+| `sileo.action()` | Display a toast with an action |
+| `sileo.promise()` | Track a promise lifecycle |
+| `sileo.update()` | Update an existing toast by ID |
+| `sileo.dismiss()` | Dismiss one toast by ID |
+| `sileo.clear()` | Clear all toasts or one position |
 
 ## Installation
 
@@ -65,6 +83,30 @@ sileo.success("Saved");
 sileo.error("Something went wrong");
 sileo.warning("Check this first");
 sileo.info("Heads up");
+```
+
+Use an options object when you need a description or customization:
+
+```tsx
+sileo.success({
+  title: "Profile saved",
+  description: "Your public details are now up to date.",
+  position: "bottom-right",
+  duration: 5000,
+});
+```
+
+## Action Toasts
+
+```tsx
+sileo.action({
+  title: "Invite sent",
+  description: "Naveen can now access the workspace.",
+  button: {
+    title: "Undo",
+    onClick: () => sileo.success("Invite restored"),
+  },
+});
 ```
 
 ## Limit, Queue, and Duplicates
@@ -177,9 +219,90 @@ sileo.promise(fetchUsers(), {
 });
 ```
 
+## Dismiss and Clear
+
+Every toast call returns its ID:
+
+```tsx
+const id = sileo.info({
+  title: "Persistent notification",
+  duration: null,
+});
+
+sileo.dismiss(id);
+```
+
+Clear the complete stream or only one position:
+
+```tsx
+sileo.clear();
+sileo.clear("bottom-right");
+```
+
+## Custom Styling
+
+Customize an individual toast:
+
+```tsx
+sileo.show({
+  title: "A custom toast",
+  description: "Colors, shape, timing, and content are configurable.",
+  fill: "#e8ff67",
+  roundness: 22,
+  styles: {
+    title: "my-toast-title",
+    description: "my-toast-description",
+    badge: "my-toast-badge",
+    button: "my-toast-button",
+  },
+});
+```
+
+Toast description text uses the `--sileo-foreground` CSS variable:
+
+```css
+:root {
+  --sileo-foreground: #202327;
+}
+```
+
+## Toaster Props
+
+```ts
+type SileoToasterProps = {
+  children?: React.ReactNode;
+  position?: SileoPosition;
+  offset?:
+    | number
+    | string
+    | Partial<Record<"top" | "right" | "bottom" | "left", number | string>>;
+  options?: Partial<SileoOptions>;
+  limit?: number;
+  enqueue?: boolean;
+  avoidDuplicates?: boolean;
+};
+```
+
+Use `options` for defaults shared by every toast:
+
+```tsx
+<Toaster
+  position="top-right"
+  offset={18}
+  limit={3}
+  enqueue
+  avoidDuplicates
+  options={{
+    duration: 6000,
+    autopilot: true,
+    roundness: 18,
+  }}
+/>
+```
+
 ## Options
 
-Most APIs accept the same toast options.
+Toast methods accept either a string message or the following options object.
 
 ```ts
 type SileoOptions = {
@@ -196,6 +319,12 @@ type SileoOptions = {
     | "bottom-right";
   duration?: number | null;
   icon?: React.ReactNode | null;
+  styles?: {
+    title?: string;
+    description?: string;
+    badge?: string;
+    button?: string;
+  };
   fill?: string;
   roundness?: number;
   autopilot?: boolean | { expand?: number; collapse?: number };
@@ -209,3 +338,23 @@ type SileoOptions = {
 
 Set `duration: null` for a persistent toast. Omit `id` for a new toast, or pass a
 stable `id` when you intentionally want future calls to update the same toast.
+
+## Browser Support and Accessibility
+
+- Toast viewports use polite live regions for announcements.
+- Queueing ensures notifications can be displayed and announced in order.
+- Swipe gestures clean up pointer capture when completed or cancelled.
+- Motion respects the user's reduced-motion preference.
+
+## Development
+
+```bash
+bun install
+bun run test
+bun run build
+bun run build:demo
+```
+
+## License
+
+MIT © GanpatJangra
